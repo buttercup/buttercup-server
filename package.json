@@ -1,0 +1,36 @@
+{
+  "name": "buttercup-server",
+  "version": "0.1.0",
+  "description": "Archive server for Buttercup",
+  "main": "source/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buttercup-pw/buttercup-server.git"
+  },
+  "keywords": [
+    "buttercup",
+    "archive",
+    "server",
+    "credentials",
+    "security",
+    "encryption",
+    "crypto"
+  ],
+  "author": "Perry Mitchell <perry@perrymitchell.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/buttercup-pw/buttercup-server/issues"
+  },
+  "homepage": "https://github.com/buttercup-pw/buttercup-server#readme",
+  "dependencies": {
+    "file-exists": "^2.0.0",
+    "iocane": "~0.4.0",
+    "koa": "^1.2.4",
+    "koa-body": "^1.5.0",
+    "koa-router": "^5.4.0",
+    "sha.js": "^2.4.5"
+  }
+}

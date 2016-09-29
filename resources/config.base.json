@@ -1,0 +1,8 @@
+{
+    "archives": {
+        "storage": "files",
+        "path": "/tmp"
+    },
+    "port": 8080,
+    "secret": "secret-shh!"
+}
