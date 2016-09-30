@@ -9,24 +9,37 @@ let accountTools = module.exports = {
         } = packet;
         if (storageAdapter.accountExists(email)) {
             // account exists
-            this.status = 403;
-        } else {
-
+            console.log(`Account already exists: ${email}`);
+            return false;
         }
+        accountTools.writeAccountInfo(email, {
+            email,
+            created: Date.now().toString()
+        });
+        return true;
     },
 
     handleAccountRequest: function *() {
-        let packet = this.request.body;
+        let packet = this.request.body,
+            status = "fail";
         if (packet.request === "create") {
-            accountTools.createAccount.call(this, packet);
-            this.response.set("Content-Type", "application/json");
-            this.body = JSON.stringify({
-                status: "ok"
-            });
+            let created = accountTools.createAccount(packet);
+            status = created ? "ok" : "fail"
+            if (!created) {
+                this.status = 403;
+            }
         } else {
             // bad request
             this.status = 400;
         }
+        this.response.set("Content-Type", "application/json");
+        this.body = JSON.stringify({
+            status
+        });
+    },
+
+    writeAccountInfo(email, info) {
+        storageAdapter.writeInfo(email, JSON.stringify(info));
     }
 
 };
