@@ -22,6 +22,27 @@ function __accountExists(email, config) {
     }
 }
 
+function __getArchiveContents(email, config) {
+    config = config || global.config;
+    switch (config.get("archives.storage")) {
+        case "files": {
+            let storagePath = config.get("archives.path"),
+                accountHash = securityTools.generateAccountHash(email),
+                archiveFilename = `${accountHash}.archive`,
+                archivePath = path.resolve(storagePath, archiveFilename);
+            if (fileExists(archivePath) !== true) {
+                return null;
+            }
+            return fs.readFileSync(archivePath, "utf8");
+        }
+
+        // @todo info
+
+        default:
+            throw new Error("Unknown item");
+    }
+}
+
 function __init(config) {
     config = config || global.config;
     switch (config.get("archives.storage")) {
@@ -57,6 +78,10 @@ module.exports = {
 
     accountExists: function(email, config) {
         return __accountExists(email, config);
+    },
+
+    getArchiveFileContents: function(email, config) {
+        return __getArchiveContents(email, config);
     },
 
     initialise: function(config) {
