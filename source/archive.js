@@ -19,16 +19,28 @@ let archiveTools = module.exports = {
                 passw: password
             } = packet;
         if (packet.request === "get") {
-            archive = archiveTools.getArchive(email, password);
+            let archive = archiveTools.getArchive(email, password);
             if (archive && archive.length > 0) {
                 console.log(`Archive request: ${email}`);
                 output.status = "ok";
                 output.archive = archive;
             } else {
-                console.log(`Failed archive request: ${email}`);
+                console.log(`Failed archive get request: ${email}`);
             }
         } else if (packet.request === "save") {
-
+            let archive = archiveTools.getArchive(email, password);
+            if (archive && archive.length > 0) {
+                let archiveContents = packet.archive;
+                if (archiveContents) {
+                    console.log(`Archive saved: ${email}`);
+                    storageAdapter.writeArchive(email, archiveContents);
+                    output.status = "ok";
+                } else {
+                    console.log(`Failed archive save request: ${email} - No archive data provided`);
+                }
+            } else {
+                console.log(`Failed archive save (pre-fetch) request: ${email}`);
+            }
         } else {
             output.reason = "invalid request";
         }

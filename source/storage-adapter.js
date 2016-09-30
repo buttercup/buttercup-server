@@ -35,8 +35,6 @@ function __getArchiveContents(email, config) {
             return fs.readFileSync(archivePath, "utf8");
         }
 
-        // @todo info
-
         default:
             throw new Error("Unknown item");
     }
@@ -78,6 +76,23 @@ function __init(config) {
     }
 }
 
+function __writeArchive(email, text, config) {
+    config = config || global.config;
+    switch (config.get("archives.storage")) {
+        case "files": {
+            let storagePath = config.get("archives.path"),
+                accountHash = securityTools.generateAccountHash(email),
+                archiveFilename = `${accountHash}.archive`,
+                archivePath = path.resolve(storagePath, archiveFilename);
+            fs.writeFileSync(archivePath, text, "utf8");
+            break;
+        }
+
+        default:
+            throw new Error("Invalid or unspecified archive storage mechanism");
+    }
+}
+
 function __writeInfo(email, text, config) {
     config = config || global.config;
     switch (config.get("archives.storage")) {
@@ -111,6 +126,10 @@ module.exports = {
 
     initialise: function(config) {
         return __init(config);
+    },
+
+    writeArchive: function(email, archiveText, config) {
+        __writeArchive(email, archiveText, config);
     },
 
     writeInfo: function(email, text, config) {
