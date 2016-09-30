@@ -12,7 +12,6 @@ function __accountExists(email, config) {
         case "files": {
             let storagePath = config.get("archives.path"),
                 accountHash = securityTools.generateAccountHash(email),
-                //archiveFilename = `${accountHash}.archive`,
                 infoFilename = `${accountHash}.info`;
             return fileExists(path.resolve(storagePath, infoFilename));
         }
@@ -34,6 +33,28 @@ function __getArchiveContents(email, config) {
                 return null;
             }
             return fs.readFileSync(archivePath, "utf8");
+        }
+
+        // @todo info
+
+        default:
+            throw new Error("Unknown item");
+    }
+}
+
+function __getInfo(email, config) {
+    config = config || global.config;
+    switch (config.get("archives.storage")) {
+        case "files": {
+            let storagePath = config.get("archives.path"),
+                accountHash = securityTools.generateAccountHash(email),
+                infoFilename = `${accountHash}.info`,
+                infoPath = path.resolve(storagePath, infoFilename);
+            if (fileExists(infoPath) !== true) {
+                return null;
+            }
+            let content = fs.readFileSync(infoPath, "utf8");
+            return JSON.parse(content);
         }
 
         // @todo info
@@ -82,6 +103,10 @@ module.exports = {
 
     getArchiveFileContents: function(email, config) {
         return __getArchiveContents(email, config);
+    },
+
+    getInfo: function(email, config) {
+        return __getInfo(email, config);
     },
 
     initialise: function(config) {

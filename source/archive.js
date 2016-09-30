@@ -1,9 +1,14 @@
 const storageAdapter = require("./storage-adapter.js");
+const securityTools = require("./tools/security.js");
 
 let archiveTools = module.exports = {
 
-    getArchive: function(email, config) {
-        return storageAdapter.getArchiveFileContents(email, config);
+    getArchive: function(email, password, config) {
+        let info = storageAdapter.getInfo(email),
+            passwordHash = securityTools.generatePasswordHash(password);
+        return (info && info.password === passwordHash) ? 
+            storageAdapter.getArchiveFileContents(email, config) :
+            null;
     },
 
     handleArchiveRequest: function *() {
@@ -19,6 +24,8 @@ let archiveTools = module.exports = {
                 console.log(`Archive request: ${email}`);
                 output.status = "ok";
                 output.archive = archive;
+            } else {
+                console.log(`Failed archive request: ${email}`);
             }
         } else if (packet.request === "save") {
 

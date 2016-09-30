@@ -7,6 +7,13 @@ module.exports = {
             secret = global.config.get("secret", ""),
             hash = sha256.update(secret + email, "utf8").digest("hex");
         return hash;
+    },
+
+    generatePasswordHash: function(password) {
+        let sha256 = createHash("sha256"),
+            secret = global.config.get("secret", ""),
+            hash = sha256.update(secret + password, "utf8").digest("hex");
+        return hash;
     }
 
 };

@@ -1,4 +1,5 @@
 const storageAdapter = require("./storage-adapter.js");
+const securityTools = require("./tools/security.js");
 
 let accountTools = module.exports = {
 
@@ -14,6 +15,7 @@ let accountTools = module.exports = {
         }
         accountTools.writeAccountInfo(email, {
             email,
+            password: securityTools.generatePasswordHash(password),
             created: Date.now().toString()
         });
         return true;
