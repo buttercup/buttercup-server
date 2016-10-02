@@ -3,6 +3,15 @@
         "storage": "files",
         "path": "/tmp"
     },
+    "logs": [
+        {
+            "output": "stdout"
+        },
+        {
+            "output": "file",
+            "logpath": "/tmp/bcup-server.log"
+        }
+    ],
     "port": 8080,
     "secret": "secret-shh!"
 }

@@ -1,5 +1,6 @@
 const storageAdapter = require("./storage-adapter.js");
 const securityTools = require("./tools/security.js");
+const Logger = require("./logger.js");
 
 let archiveTools = module.exports = {
 
@@ -18,28 +19,32 @@ let archiveTools = module.exports = {
                 email,
                 passw: password
             } = packet;
+        const log = Logger.getSharedInstance().sub({
+            request: "archive",
+            action: packet.request
+        });
         if (packet.request === "get") {
             let archive = archiveTools.getArchive(email, password);
             if (typeof archive === "string") {
-                console.log(`Archive request: ${email}`);
+                log.info({ email }, "success");
                 output.status = "ok";
                 output.archive = archive;
             } else {
-                console.log(`Failed archive get request: ${email}`);
+                log.warn({ email }, "failure");
             }
         } else if (packet.request === "save") {
             let archive = archiveTools.getArchive(email, password);
             if (typeof archive === "string") {
                 let archiveContents = packet.archive;
                 if (archiveContents) {
-                    console.log(`Archive saved: ${email}`);
+                    log.info({ email }, "success");
                     storageAdapter.writeArchive(email, archiveContents);
                     output.status = "ok";
                 } else {
-                    console.log(`Failed archive save request: ${email} - No archive data provided`);
+                    log.warn({ email, reason: "no archive data" }, "failure");
                 }
             } else {
-                console.log(`Failed archive save (pre-fetch) request: ${email}`);
+                log.warn({ email, reason: "prefetch response" }, "failure");
             }
         } else {
             output.reason = "invalid request";
