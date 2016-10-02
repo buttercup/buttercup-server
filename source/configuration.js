@@ -7,7 +7,8 @@ function getValue(obj, pathArr, def) {
     let nextPath = pathArr.shift();
     if (nextPath) {
         return (pathArr.length > 0) ?
-            (obj.hasOwnProperty(nextPath) ? getValue(obj[nextPath], pathArr, def) : def) :
+            (obj.hasOwnProperty(nextPath) ?
+                getValue(obj[nextPath], pathArr, def) : def) :
             obj[nextPath] || def;
     }
     return obj || def;
