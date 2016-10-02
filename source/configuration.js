@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const fileExists = require("file-exists");
+
 function getValue(obj, pathArr, def) {
     let nextPath = pathArr.shift();
     if (nextPath) {
@@ -9,6 +11,14 @@ function getValue(obj, pathArr, def) {
             obj[nextPath] || def;
     }
     return obj || def;
+}
+
+function placeConfig(configPath) {
+    if (fileExists(configPath) !== true) {
+        const baseConfigPath = path.resolve(__dirname, "../resources/config.base.json");
+        let baseConfig = fs.readFileSync(baseConfigPath, "utf8");
+        fs.writeFileSync(configPath, baseConfig, "utf8");
+    }
 }
 
 class Configuration {
@@ -40,7 +50,9 @@ Configuration.loadFromFile = function(filename, allowEmpty = false) {
 };
 
 Configuration.loadLocalConfig = function() {
-    return Configuration.loadFromFile(path.resolve(__dirname, "../config.json"), true);
+    let configPath = path.resolve(__dirname, "../config.json");
+    placeConfig(configPath);
+    return Configuration.loadFromFile(configPath, true);
 };
 
 module.exports = Configuration;
