@@ -20,7 +20,7 @@ let archiveTools = module.exports = {
             } = packet;
         if (packet.request === "get") {
             let archive = archiveTools.getArchive(email, password);
-            if (archive && archive.length > 0) {
+            if (typeof archive === "string") {
                 console.log(`Archive request: ${email}`);
                 output.status = "ok";
                 output.archive = archive;

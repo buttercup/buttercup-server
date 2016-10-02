@@ -30,7 +30,8 @@ function __getArchiveContents(email, config) {
                 archiveFilename = `${accountHash}.archive`,
                 archivePath = path.resolve(storagePath, archiveFilename);
             if (fileExists(archivePath) !== true) {
-                return null;
+                // return empty (new archive)
+                return "";
             }
             return fs.readFileSync(archivePath, "utf8");
         }
