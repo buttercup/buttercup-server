@@ -29,7 +29,7 @@ let archiveTools = module.exports = {
             }
         } else if (packet.request === "save") {
             let archive = archiveTools.getArchive(email, password);
-            if (archive && archive.length > 0) {
+            if (typeof archive === "string") {
                 let archiveContents = packet.archive;
                 if (archiveContents) {
                     console.log(`Archive saved: ${email}`);

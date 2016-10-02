@@ -12,6 +12,6 @@ router
         this.body = "Hello human!\n\nThis Buttercup server is intended for machine use only, sorry.";
     })
     .post("/account", koaBody, accountHelper.handleAccountRequest)
-    .post("/archive", koaBody, archiveHelper.handleArchiveRequest)
+    .post("/archive", koaBody, archiveHelper.handleArchiveRequest);
 
 module.exports = router;
