@@ -1,7 +1,7 @@
 # Buttercup server
 Archive management server for Buttercup.
 
-[![Buttercup](https://buttercup.pw/buttercup.svg)](https://buttercup.pw)
+[![Buttercup](https://buttercup.pw/buttercup.svg)](https://buttercup.pw) [![npm version](https://badge.fury.io/js/buttercup-server.svg)](https://www.npmjs.com/package/buttercup-server)
 
 ## About
 Commercial password management applications are usually backed by hosted solutions. **Buttercup server** is a package designed at delivering that side of the equation, and will eventually be used to back our own hosted solution.
