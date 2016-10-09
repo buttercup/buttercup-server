@@ -5,67 +5,93 @@ const fileExists = require("file-exists");
 const mkdirp = require("mkdirp");
 
 const securityTools = require("./tools/security.js");
+const Logger = require("./logger.js");
 
 function __accountExists(email, config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
-        case "files": {
-            let storagePath = config.get("archives.path"),
-                accountHash = securityTools.generateAccountHash(email),
-                infoFilename = `${accountHash}.info`;
-            return fileExists(path.resolve(storagePath, infoFilename));
-        }
+    return new Promise(function(resolve, reject) {
+        switch (config.get("archives.storage")) {
+            case "files": {
+                let storagePath = config.get("archives.path"),
+                    accountHash = securityTools.generateAccountHash(email),
+                    infoFilename = `${accountHash}.info`;
+                resolve(fileExists(path.resolve(storagePath, infoFilename)));
+            }
 
-        default:
-            throw new Error("Invalid or unspecified archive storage mechanism");
-    }
+            default:
+                throw new Error("Invalid or unspecified archive storage mechanism");
+        }
+    });
 }
 
 function __getArchiveContents(email, config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
-        case "files": {
-            let storagePath = config.get("archives.path"),
-                accountHash = securityTools.generateAccountHash(email),
-                archiveFilename = `${accountHash}.archive`,
-                archivePath = path.resolve(storagePath, archiveFilename);
-            if (fileExists(archivePath) !== true) {
-                // return empty (new archive)
-                return "";
+    const log = Logger.getSharedInstance();
+    let storageType = config.get("archives.storage");
+    return new Promise(function(resolve, reject) {
+        switch (storageType) {
+            case "files": {
+                let storagePath = config.get("archives.path"),
+                    accountHash = securityTools.generateAccountHash(email),
+                    archiveFilename = `${accountHash}.archive`,
+                    archivePath = path.resolve(storagePath, archiveFilename);
+                if (fileExists(archivePath) !== true) {
+                    // return empty (new archive)
+                    return "";
+                }
+                fs.readFile(archivePath, "utf8", function(err, data) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+                break;
             }
-            return fs.readFileSync(archivePath, "utf8");
-        }
 
-        default:
-            throw new Error("Unknown item");
-    }
+            default:
+                log.error({ storageType }, "unknown storage type");
+                throw new Error("Invalid or unspecified archive storage mechanism");
+        }
+    });
 }
 
 function __getInfo(email, config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
-        case "files": {
-            let storagePath = config.get("archives.path"),
-                accountHash = securityTools.generateAccountHash(email),
-                infoFilename = `${accountHash}.info`,
-                infoPath = path.resolve(storagePath, infoFilename);
-            if (fileExists(infoPath) !== true) {
-                return null;
+    const log = Logger.getSharedInstance();
+    let storageType = config.get("archives.storage");
+    return new Promise(function(resolve, reject) {
+        switch (storageType) {
+            case "files": {
+                let storagePath = config.get("archives.path"),
+                    accountHash = securityTools.generateAccountHash(email),
+                    infoFilename = `${accountHash}.info`,
+                    infoPath = path.resolve(storagePath, infoFilename);
+                if (fileExists(infoPath) !== true) {
+                    resolve(null);
+                }
+                fs.readFile(infoPath, "utf8", function(err, content) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(JSON.parse(content));
+                    }
+                });
+                break;
             }
-            let content = fs.readFileSync(infoPath, "utf8");
-            return JSON.parse(content);
+
+            default:
+                log.error({ storageType }, "unknown storage type");
+                throw new Error("Invalid or unspecified archive storage mechanism");
         }
-
-        // @todo info
-
-        default:
-            throw new Error("Unknown item");
-    }
+    });
 }
 
 function __init(config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
+    const log = Logger.getSharedInstance();
+    let storageType = config.get("archives.storage");
+    switch (storageType) {
         case "files": {
             let storagePath = config.get("archives.path");
             mkdirp.sync(storagePath);
@@ -73,42 +99,55 @@ function __init(config) {
         }
 
         default:
+            log.error({ storageType }, "unknown storage type");
             throw new Error("Invalid or unspecified archive storage mechanism");
     }
 }
 
 function __writeArchive(email, text, config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
-        case "files": {
-            let storagePath = config.get("archives.path"),
-                accountHash = securityTools.generateAccountHash(email),
-                archiveFilename = `${accountHash}.archive`,
-                archivePath = path.resolve(storagePath, archiveFilename);
-            fs.writeFileSync(archivePath, text, "utf8");
-            break;
-        }
+    const log = Logger.getSharedInstance();
+    let storageType = config.get("archives.storage");
+    return new Promise(function(resolve, reject) {
+        switch (storageType) {
+            case "files": {
+                let storagePath = config.get("archives.path"),
+                    accountHash = securityTools.generateAccountHash(email),
+                    archiveFilename = `${accountHash}.archive`,
+                    archivePath = path.resolve(storagePath, archiveFilename);
+                fs.writeFileSync(archivePath, text, "utf8");
+                resolve();
+                break;
+            }
 
-        default:
-            throw new Error("Invalid or unspecified archive storage mechanism");
-    }
+            default:
+                log.error({ storageType }, "unknown storage type");
+                throw new Error("Invalid or unspecified archive storage mechanism");
+        }
+    });
 }
 
 function __writeInfo(email, text, config) {
     config = config || global.config;
-    switch (config.get("archives.storage")) {
-        case "files": {
-            let storagePath = config.get("archives.path"),
-                accountHash = securityTools.generateAccountHash(email),
-                infoFilename = `${accountHash}.info`,
-                infoPath = path.resolve(storagePath, infoFilename);
-            fs.writeFileSync(infoPath, text, "utf8");
-            break;
-        }
+    const log = Logger.getSharedInstance();
+    let storageType = config.get("archives.storage");
+    return new Promise(function(resolve, reject) {
+        switch (storageType) {
+            case "files": {
+                let storagePath = config.get("archives.path"),
+                    accountHash = securityTools.generateAccountHash(email),
+                    infoFilename = `${accountHash}.info`,
+                    infoPath = path.resolve(storagePath, infoFilename);
+                fs.writeFileSync(infoPath, text, "utf8");
+                resolve();
+                break;
+            }
 
-        default:
-            throw new Error("Invalid or unspecified archive storage mechanism");
-    }
+            default:
+                log.error({ storageType }, "unknown storage type");
+                throw new Error("Invalid or unspecified archive storage mechanism");
+        }
+    });
 }
 
 module.exports = {
@@ -130,11 +169,11 @@ module.exports = {
     },
 
     writeArchive: function(email, archiveText, config) {
-        __writeArchive(email, archiveText, config);
+        return __writeArchive(email, archiveText, config);
     },
 
     writeInfo: function(email, text, config) {
-        __writeInfo(email, text, config);
+        return __writeInfo(email, text, config);
     }
 
 };

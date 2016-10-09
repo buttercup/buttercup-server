@@ -8,6 +8,10 @@ class Logger {
         this.logUtil = logUtil;
     }
 
+    error() {
+        this.logUtil.error.apply(this.logUtil, arguments);
+    }
+
     info() {
         this.logUtil.info.apply(this.logUtil, arguments);
     }

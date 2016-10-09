@@ -11,17 +11,22 @@ let accountTools = module.exports = {
             email,
             passw: password
         } = packet;
-        if (storageAdapter.accountExists(email)) {
-            // account exists
-            log.warn({ email }, "account already exists");
-            return false;
-        }
-        accountTools.writeAccountInfo(email, {
-            email,
-            password: securityTools.generatePasswordHash(password),
-            created: Date.now().toString()
-        });
-        return true;
+        return storageAdapter
+            .accountExists(email)
+            .then(function(exists) {
+                if (exists) {
+                    // account exists
+                    log.warn({ email }, "account already exists");
+                    return false;
+                }
+                return accountTools
+                    .writeAccountInfo(email, {
+                        email,
+                        password: securityTools.generatePasswordHash(password),
+                        created: Date.now().toString()
+                    })
+                    .then(() => true);
+            });
     },
 
     handleAccountRequest: function *() {
@@ -32,27 +37,33 @@ let accountTools = module.exports = {
             action: packet.request
         });
         if (packet.request === "create") {
-            let created = accountTools.createAccount(packet);
-            status = created ? "ok" : "fail"
-            if (!created) {
-                this.status = 403;
-                log.warn({ email: packet.email, reason: "create failed" }, "failure");
-            } else {
-                log.info({ email: packet.email }, "success")
-            }
-        } else {
-            // bad request
-            this.status = 400;
-            log.warn({ email: packet.email, reason: "no instruction" }, "failure");
+            return accountTools
+                .createAccount(packet)
+                .then((created) => {
+                    status = created ? "ok" : "fail"
+                    if (!created) {
+                        this.status = 403;
+                        log.warn({ email: packet.email, reason: "create failed" }, "failure");
+                        throw new Error("Account creation failed");
+                    }
+                    log.info({ email: packet.email }, "success");
+                    this.response.set("Content-Type", "application/json");
+                    this.body = JSON.stringify({
+                        status
+                    });
+                })
+                .catch((err) => {
+                    this.status = 500;
+                    log.error({ error: err.message }, "account error");
+                });
         }
-        this.response.set("Content-Type", "application/json");
-        this.body = JSON.stringify({
-            status
-        });
+        // bad request
+        this.status = 400;
+        log.warn({ email: packet.email, reason: "no instruction" }, "failure");
     },
 
     writeAccountInfo(email, info) {
-        storageAdapter.writeInfo(email, JSON.stringify(info));
+        return storageAdapter.writeInfo(email, JSON.stringify(info));
     }
 
 };
