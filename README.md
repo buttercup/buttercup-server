@@ -15,4 +15,4 @@ To start the server, simply run `npm start`.
 
 Once started the server will create a `config.json` file in the server's directory. This configuration should be modified for the desired use-case of the server. Instructions on the available configuration options can be [found here](CONFIG.md).
 
-There is also a small amount of [API documentation](API.md).
+There is also a small amount of [API documentation](API.md) as well as a [changelog](CHANGELOG.md).
