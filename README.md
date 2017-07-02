@@ -1,7 +1,7 @@
 # Buttercup server
 Archive management server for Buttercup.
 
-# _This project is currently on hold as we re-assess it's place in the Buttercup family_
+# _This project is currently on hold as we re-assess its place in the Buttercup family_
 
 [![Buttercup](https://buttercup.pw/buttercup.svg)](https://buttercup.pw) [![npm version](https://badge.fury.io/js/buttercup-server.svg)](https://www.npmjs.com/package/buttercup-server)
 
