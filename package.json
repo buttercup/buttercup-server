@@ -4,7 +4,7 @@
   "description": "Archive server for Buttercup",
   "main": "source/index.js",
   "scripts": {
-    "start": "node ./source/index.js | ./node_modules/bunyan/bin/bunyan",
+    "start": "",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,13 +27,5 @@
   },
   "homepage": "https://github.com/buttercup-pw/buttercup-server#readme",
   "dependencies": {
-    "bunyan": "^1.8.1",
-    "file-exists": "^2.0.0",
-    "iocane": "~0.4.0",
-    "koa": "~1.2.4",
-    "koa-body": "~1.5.0",
-    "koa-router": "~5.4.0",
-    "mkdirp": "^0.5.1",
-    "sha.js": "~2.4.5"
   }
 }
