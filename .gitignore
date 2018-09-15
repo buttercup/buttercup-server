@@ -1,4 +1,5 @@
 *.log
 .vscode
 .history
+.bcupserver.conf.json
 node_modules

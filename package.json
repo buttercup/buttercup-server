@@ -7,6 +7,10 @@
     "start": "",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "bcup-server-configure": "./source/cli/config.js",
+    "bcup-server": "./source/cli/server.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/buttercup-pw/buttercup-server.git"
@@ -27,5 +31,11 @@
   },
   "homepage": "https://github.com/buttercup-pw/buttercup-server#readme",
   "dependencies": {
+    "chalk": "^2.4.1",
+    "command-line-args": "^5.0.2",
+    "express": "^4.16.3",
+    "password-prompt": "^1.0.7",
+    "pify": "^4.0.0",
+    "prompt-confirm": "^2.0.4"
   }
 }
